@@ -19,23 +19,25 @@ def fazer_login(driver, email, senha):
     
     wait = WebDriverWait(driver, 10)
     
-    campo_email = wait.until(EC.presence_of_element_located((By.ID, "inputEmailAddress")))
-    campo_email.send_keys(email)
-    
-    campo_senha = driver.find_element(By.ID, "inputPassword")
-    campo_senha.send_keys(senha)
-    
-    botao_login = driver.find_element(By.CSS_SELECTOR, ".btn.btn-lg.w-100.bg-purple")
-    botao_login.click()
-    
-    time.sleep(5)
-    
     try:
+        campo_email = wait.until(EC.presence_of_element_located((By.ID, "inputEmailAddress")))
+        campo_email.clear()
+        campo_email.send_keys(email)
+        
+        campo_senha = driver.find_element(By.ID, "inputPassword")
+        campo_senha.clear()
+        campo_senha.send_keys(senha)
+        
+        botao_login = driver.find_element(By.CSS_SELECTOR, ".btn.btn-lg.w-100.bg-purple")
+        botao_login.click()
+        
+        time.sleep(5)
+        
         wait.until(EC.presence_of_element_located((By.CLASS_NAME, "card-body")))
         print("Login realizado com sucesso!")
         return True
-    except:
-        print("ERRO: Falha no login!")
+    except Exception as e:
+        print(f"ERRO: Falha no login! - {e}")
         return False
 
 def salvar_cookies(driver, arquivo="cookies.pkl"):
@@ -46,13 +48,25 @@ def salvar_cookies(driver, arquivo="cookies.pkl"):
 def carregar_cookies(driver, arquivo="cookies.pkl"):
     """Carrega cookies de um arquivo"""
     if os.path.exists(arquivo):
-        cookies = pickle.load(open(arquivo, "rb"))
-        for cookie in cookies:
-            try:
-                driver.add_cookie(cookie)
-            except:
-                pass
-        print("Cookies carregados!")
+        try:
+            cookies = pickle.load(open(arquivo, "rb"))
+            for cookie in cookies:
+                try:
+                    driver.add_cookie(cookie)
+                except:
+                    pass
+            print("Cookies carregados!")
+            return True
+        except Exception as e:
+            print(f"ERRO ao carregar cookies: {e}")
+            return False
+    return False
+
+def deletar_cookies(arquivo="cookies.pkl"):
+    """Deleta o arquivo de cookies"""
+    if os.path.exists(arquivo):
+        os.remove(arquivo)
+        print(f"Cookies deletados: {arquivo}")
         return True
     return False
 
@@ -261,11 +275,11 @@ def extrair_questoes(driver, url):
     
     return questoes_json
 
-def salvar_json(todas_questoes, arquivo="enem2016_matematica.json"):
+def salvar_json(todas_questoes, arquivo="enem2015_matematica.json"):
     """Salva todas as questões em um arquivo JSON"""
     dados = {
         "prova": "MATEMÁTICA E SUAS TECNOLOGIAS",
-        "ano": 2016,
+        "ano": 2015,
         "questoes": todas_questoes
     }
     
@@ -274,6 +288,29 @@ def salvar_json(todas_questoes, arquivo="enem2016_matematica.json"):
     
     print(f"\nArquivo salvo: {arquivo}")
     print(f"Total de questões extraídas: {len(todas_questoes)}")
+
+def realizar_login_com_retry(driver, email, senha, max_tentativas=3):
+    """Tenta fazer login com múltiplas tentativas"""
+    for tentativa in range(1, max_tentativas + 1):
+        print(f"\n--- Tentativa de login {tentativa}/{max_tentativas} ---")
+        
+        # Deletar cookies antes de tentar novamente
+        if tentativa > 1:
+            print("Deletando cookies corrompidos...")
+            deletar_cookies()
+            driver.delete_all_cookies()
+        
+        # Tentar fazer login
+        login_ok = fazer_login(driver, email, senha)
+        
+        if login_ok:
+            salvar_cookies(driver)
+            return True
+        
+        print(f"Tentativa {tentativa} falhou.")
+        time.sleep(2)
+    
+    return False
 
 # ============ CÓDIGO PRINCIPAL ============
 
@@ -289,19 +326,23 @@ try:
     if cookies_existem:
         print("Verificando se cookies ainda são válidos...")
         login_ok = verificar_login(driver)
+        
+        # Se cookies existem mas são inválidos, deletar
+        if not login_ok:
+            print("Cookies inválidos detectados. Deletando...")
+            deletar_cookies()
     
     if not login_ok:
-        print("Cookies inválidos ou inexistentes. Fazendo login...")
-        login_ok = fazer_login(driver, "laionp98@gmail.com", "00uLisses00!")
+        print("Realizando login...")
+        login_ok = realizar_login_com_retry(driver, "laionp98@gmail.com", "00uLisses00!", max_tentativas=3)
         
-        if login_ok:
-            salvar_cookies(driver)
-        else:
-            print("ERRO CRÍTICO: Não foi possível fazer login!")
+        if not login_ok:
+            print("\n❌ ERRO CRÍTICO: Não foi possível fazer login após múltiplas tentativas!")
+            print("Verifique suas credenciais ou tente novamente mais tarde.")
             driver.quit()
             exit(1)
     
-    base_url = "https://app.repertorioenem.com.br/questions/list?search=1&field%5B%5D=11&institution%5B%5D=1&year%5B%5D=2016&text=&pages=50&order_by=1"
+    base_url = "https://app.repertorioenem.com.br/questions/list?search=1&field%5B%5D=11&institution%5B%5D=1&year%5B%5D=2015&text=&pages=50&order_by=1"
     
     todas_questoes = []
     
@@ -314,9 +355,9 @@ try:
     
     if len(todas_questoes) > 0:
         salvar_json(todas_questoes)
-        print("\n=== EXTRAÇÃO CONCLUÍDA ===")
+        print("\n✅ === EXTRAÇÃO CONCLUÍDA ===")
     else:
-        print("\n=== NENHUMA QUESTÃO EXTRAÍDA - VERIFIQUE O LOGIN ===")
+        print("\n⚠️ === NENHUMA QUESTÃO EXTRAÍDA - VERIFIQUE O LOGIN ===")
     
 finally:
     driver.quit()
