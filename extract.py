@@ -261,10 +261,10 @@ def extrair_questoes(driver, url):
     
     return questoes_json
 
-def salvar_json(todas_questoes, arquivo="enem2016_natureza.json"):
+def salvar_json(todas_questoes, arquivo="enem2016_matematica.json"):
     """Salva todas as questões em um arquivo JSON"""
     dados = {
-        "prova": "CIÊNCIAS DA NATUREZA E SUAS TECNOLOGIAS",
+        "prova": "MATEMÁTICA E SUAS TECNOLOGIAS",
         "ano": 2016,
         "questoes": todas_questoes
     }
@@ -301,7 +301,7 @@ try:
             driver.quit()
             exit(1)
     
-    base_url = "https://app.repertorioenem.com.br/questions/list?search=1&field%5B%5D=8&field%5B%5D=10&field%5B%5D=9&institution%5B%5D=1&year%5B%5D=2016&text=&pages=50&order_by=1"
+    base_url = "https://app.repertorioenem.com.br/questions/list?search=1&field%5B%5D=11&institution%5B%5D=1&year%5B%5D=2016&text=&pages=50&order_by=1"
     
     todas_questoes = []
     

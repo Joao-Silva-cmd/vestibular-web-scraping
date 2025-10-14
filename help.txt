@@ -1,10 +1,9 @@
-url 1o dia - LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS (2016, ajustar):
-https://app.repertorioenem.com.br/questions/list?search=1&field%5B0%5D=12&field%5B1%5D=23&field%5B2%5D=7&field%5B3%5D=4&field%5B4%5D=6&field%5B5%5D=1&field%5B6%5D=3&field%5B7%5D=2&field%5B8%5D=5&institution%5B0%5D=1&year%5B0%5D=2016&pages=50&order_by=1&page=
+https://app.repertorioenem.com.br/questions/list
 
-url 2o dia - ciencias da natureza e matematica (2016, ajustar):
-https://app.repertorioenem.com.br/questions/list?search=1&field%5B0%5D=8&field%5B1%5D=10&field%5B2%5D=11&field%5B3%5D=9&institution%5B0%5D=1&year%5B0%5D=2016&pages=50&order_by=1&page=
+LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS: Português, Literatura, Artes, Inglês e Espanhol.
 
-LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS
-CIÊNCIAS HUMANAS E SUAS TECNOLOGIAS
-MATEMÁTICA E SUAS TECNOLOGIAS
-CIÊNCIAS DA NATUREZA E SUAS TECNOLOGIAS
+CIÊNCIAS HUMANAS E SUAS TECNOLOGIAS: História, Geografia, Filosofia, Sociologia.
+
+CIÊNCIAS DA NATUREZA E SUAS TECNOLOGIAS: Biologia, Química Física.
+
+MATEMÁTICA E SUAS TECNOLOGIAS: Matemática.
