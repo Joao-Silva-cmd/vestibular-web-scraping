@@ -135,7 +135,6 @@ def limpar_html(html):
     html = html.strip()
     
     # Se houver <p> externo envolvendo outro <p>, remove o externo
-    # Ex: <p>\n <p>conteúdo</p> </p> => <p>conteúdo</p>
     pattern = r'^<p>\s*(<p>.*</p>)\s*</p>$'
     match = re.match(pattern, html, re.DOTALL)
     if match:
@@ -146,6 +145,32 @@ def limpar_html(html):
     
     return html
 
+def extrair_topicos(elemento_pai):
+    """Extrai os tópicos/assuntos da questão (do 3º span em diante)"""
+    try:
+        div_d_flex = elemento_pai.find_element(By.CSS_SELECTOR, ".d-flex.flex-wrap.text-left")
+        spans = div_d_flex.find_elements(By.TAG_NAME, "span")
+        
+        # Pegar do 3º span em diante (índice 2+)
+        topicos = []
+        for i in range(2, len(spans)):
+            texto = spans[i].text.strip()
+            if texto:
+                topicos.append(texto)
+        
+        # Juntar com ponto e vírgula
+        return "; ".join(topicos) if topicos else ""
+    except:
+        return ""
+
+def extrair_dificuldade(elemento_pai):
+    """Extrai a dificuldade da questão"""
+    try:
+        div_text_end = elemento_pai.find_element(By.CSS_SELECTOR, ".text-end")
+        span = div_text_end.find_element(By.TAG_NAME, "span")
+        return span.text.strip()
+    except:
+        return ""
 
 def extrair_questoes(driver, url):
     """Extrai enunciados e alternativas de uma página"""
@@ -172,6 +197,11 @@ def extrair_questoes(driver, url):
             
             # Localiza container principal da questão
             elemento_pai = enunciado.find_element(By.XPATH, "./ancestor::div[contains(@class, 'card')]")
+            
+            # Extrair tópicos e dificuldade
+            topicos = extrair_topicos(elemento_pai)
+            dificuldade = extrair_dificuldade(elemento_pai)
+            
             container_d_flex = elemento_pai.find_element(By.CSS_SELECTOR, ".d-flex.flex-wrap.justify-content-between")
             
             # Tenta pegar a div .ms-0 correta
@@ -201,16 +231,19 @@ def extrair_questoes(driver, url):
                 except:
                     pass
             
-            # Último input = alternativa correta
+            # Último input = alternativa correta (em maiúsculo e dentro de <p>)
             alternativa_correta = ""
             try:
                 inputs = div_ms0.find_elements(By.CSS_SELECTOR, "input")
                 if inputs:
-                    alternativa_correta = inputs[-1].get_attribute('value')
+                    alternativa_correta = inputs[-1].get_attribute('value').upper()
+                    alternativa_correta = f"<p>{alternativa_correta}</p>"
             except:
                 pass
             
             questao_obj = {
+                "assunto": topicos,
+                "dificuldade": dificuldade,
                 "enunciado_txt": enunciado_limpo,
                 "alternativas": alternativas_obj,
                 "alternativa_correta": alternativa_correta
@@ -221,7 +254,7 @@ def extrair_questoes(driver, url):
             questao_obj["enunciado_txt"] = re.sub(r'\\n\s*$', '', questao_obj["enunciado_txt"])
             
             questoes_json.append(questao_obj)
-            print(f"    Questão {i}: Extraída com sucesso")
+            print(f"    Questão {i}: Extraída com sucesso (Assunto: {topicos[:50]}..., Dificuldade: {dificuldade})")
             
         except Exception as e:
             print(f"    Questão {i}: Erro - {e}")

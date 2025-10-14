@@ -4,7 +4,7 @@ https://app.repertorioenem.com.br/questions/list?search=1&field%5B0%5D=12&field%
 url 2o dia - ciencias da natureza e matematica (2016, ajustar):
 https://app.repertorioenem.com.br/questions/list?search=1&field%5B0%5D=8&field%5B1%5D=10&field%5B2%5D=11&field%5B3%5D=9&institution%5B0%5D=1&year%5B0%5D=2016&pages=50&order_by=1&page=
 
+LINGUAGENS, CÓDIGOS E SUAS TECNOLOGIAS
+CIÊNCIAS HUMANAS E SUAS TECNOLOGIAS
 MATEMÁTICA E SUAS TECNOLOGIAS
 CIÊNCIAS DA NATUREZA E SUAS TECNOLOGIAS
-Linguagens, Códigos e suas Tecnologias
-Ciências Humanas e suas Tecnologias
