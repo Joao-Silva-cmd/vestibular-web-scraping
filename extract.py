@@ -275,14 +275,11 @@ def extrair_questoes(driver, url):
     
     return questoes_json
 
-def salvar_json(todas_questoes, arquivo="enem2021_matematica.json"):
-def salvar_json(todas_questoes, arquivo="enem2014_humanas.json"):
+def salvar_json(todas_questoes, arquivo="enem2012_natureza.json"):
     """Salva todas as questões em um arquivo JSON"""
     dados = {
-        "prova": "MATEMÁTICA E SUAS TECNOLOGIAS",
-        "ano": 2021,
-        "prova": "CIÊNCIAS HUMANAS E SUAS TECNOLOGIAS",
-        "ano": 2014,
+        "prova": "CIÊNCIAS DA NATUREZA E SUAS TECNOLOGIAS",
+        "ano": 2012,
         "questoes": todas_questoes
     }
     
@@ -344,11 +341,8 @@ try:
             print("Verifique suas credenciais ou tente novamente mais tarde.")
             driver.quit()
             exit(1)
-
-    base_url = "https://app.repertorioenem.com.br/questions/list?search=1&field%5B%5D=11&institution%5B%5D=1&year%5B%5D=2022&text=&pages=50&order_by=1"
-
     
-    base_url = "https://app.repertorioenem.com.br/questions/list?search=1&field%5B%5D=7&field%5B%5D=4&field%5B%5D=6&field%5B%5D=5&institution%5B%5D=1&year%5B%5D=2014&text=&pages=50&order_by=1"
+    base_url = "https://app.repertorioenem.com.br/questions/list?search=1&field%5B%5D=8&field%5B%5D=10&field%5B%5D=9&institution%5B%5D=1&year%5B%5D=2012&text=&pages=50&order_by=2"
     
     todas_questoes = []
     
